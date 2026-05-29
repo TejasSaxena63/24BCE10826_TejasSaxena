@@ -1,0 +1,296 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 db.products.insertMany([\
+    \{ "_id" : 1, "name" : "xPhone", "price" : 799, "releaseDate" : ISODate("2011-05-14T00:00:00Z"), "spec" : \{ "ram" : 4, "screen" : 6.5, "cpu" : 2.66 \}, "color" : [ "white", "black" ], "storage" : [ 64, 128, 256 ] \},\
+    \{ "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate" : ISODate("2011-09-01T00:00:00Z"), "spec" : \{ "ram" : 16, "screen" : 9.5, "cpu" : 3.66 \}, "color" : [ "white", "black", "purple" ], "storage" : [ 128, 256, 512 ] \},\
+    \{ "_id" : 3, "name" : "SmartTablet", "price" : 899, "releaseDate" : ISODate("2015-01-14T00:00:00Z"), "spec" : \{ "ram" : 12, "screen" : 9.7, "cpu" : 3.66 \}, "color" : [ "blue" ], "storage" : [ 16, 64, 128 ] \},\
+    \{ "_id" : 4, "name" : "SmartPad", "price" : 699, "releaseDate" : ISODate("2020-05-14T00:00:00Z"), "spec" : \{ "ram" : 8, "screen" : 9.7, "cpu" : 1.66 \}, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256, 1024 ] \},\
+    \{ "_id" : 5, "name" : "SmartPhone", "price" : 599, "releaseDate" : ISODate("2022-09-14T00:00:00Z"), "spec" : \{ "ram" : 4, "screen" : 9.7, "cpu" : 1.66 \}, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256 ] \},\
+    \{ "_id" : 6, "name" : "xWidget", "spec" : \{ "ram" : 64, "screen" : 9.7, "cpu" : 3.66 \}, "color" : [ "black" ], "storage" : [ 1024 ] \},\
+    \{ "_id" : 7, "name" : "xReader", "price" : null, "spec" : \{ "ram" : 64, "screen" : 6.7, "cpu" : 3.66 \}, "color" : [ "black", "white" ], "storage" : [ 128 ] \}\
+])\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+\cf0 db.products.find(\{\}, \{ name: 1, price: 1 \}).sort(\{ price: -1 \}).limit(1);\
+// Output: [ \{ _id: 2, name: 'xTablet', price: 899 \} ]\
+\
+db.products.find(\{\}, \{ name: 1, price: 1 \}).sort(\{ price: -1, name: 1 \}).limit(1);\
+// Output: [ \{ _id: 3, name: 'SmartTablet', price: 899 \} ]\
+\
+db.products.find(\{\}, \{ name: 1, price: 1 \}).sort(\{ price: -1, name: 1 \}).skip(2).limit(2);\
+// Output: [ \{ _id: 1, name: 'xPhone', price: 799 \}, \{ _id: 4, name: 'SmartPad', price: 699 \} ]\
+\
+\
+// Step 1: Initialize and seed the products collection\
+db.products.insertMany([\
+    \{ "_id" : 1, "name" : "xPhone", "price" : 799, "releaseDate": ISODate("2011-05-14"), "spec" : \{ "ram" : 4, "screen" : 6.5, "cpu" : 2.66 \},"color":["white","black"],"storage":[64,128,256]\},\
+    \{ "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate": ISODate("2011-09-01") , "spec" : \{ "ram" : 16, "screen" : 9.5, "cpu" : 3.66 \},"color":["white","black","purple"],"storage":[128,256,512]\},\
+    \{ "_id" : 3, "name" : "SmartTablet", "price" : 899, "releaseDate": ISODate("2015-01-14"), "spec" : \{ "ram" : 12, "screen" : 9.7, "cpu" : 3.66 \},"color":["blue"],"storage":[16,64,128]\},\
+    \{ "_id" : 4, "name" : "SmartPad", "price" : 699, "releaseDate": ISODate("2020-05-14"),"spec" : \{ "ram" : 8, "screen" : 9.7, "cpu" : 1.66 \},"color":["white","orange","gold","gray"],"storage":[128,256,1024]\},\
+    \{ "_id" : 5, "name" : "SmartPhone", "price" : 599,"releaseDate": ISODate("2022-09-14"), "spec" : \{ "ram" : 4, "screen" : 5.7, "cpu" : 1.66 \},"color":["white","orange","gold","gray"],"storage":[128,256]\}\
+ ])\
+\
+// Output:\
+\{\
+  acknowledged: true,\
+  insertedIds: \{ '0': 1, '1': 2, '2': 3, '3': 4, '4': 5 \}\
+\}\
+\
+// Step 2: Update multiple documents matching a basic condition (price: 899)\
+db.products.updateMany(\
+    \{  price: 899\}, \
+    \{ $set: \{  price: 895 \}\}\
+)\
+\
+// Output:\
+\{\
+  acknowledged: true,\
+  insertedId: null,\
+  matchedCount: 2,\
+  modifiedCount: 2,\
+  upsertedCount: 0\
+\}\
+\
+// Step 3: Verify the previous update\
+db.products.find(\{\
+    price: 895\
+\}, \{\
+    name: 1,\
+    price: 1\
+\})\
+\
+// Output:\
+[\
+  \{ _id: 2, name: 'xTablet', price: 895 \},\
+  \{ _id: 3, name: 'SmartTablet', price: 895 \}\
+]\
+\
+// Step 4: Find documents where price is greater than 700 before nested update\
+db.products.find(\{\
+    price: \{ $gt: 700\}\
+\}, \{\
+    name: 1,\
+    price: 1,\
+    spec: 1\
+\})\
+\
+// Output:\
+[\
+  \{\
+    _id: 1,\
+    name: 'xPhone',\
+    price: 799,\
+    spec: \{ ram: 4, screen: 6.5, cpu: 2.66 \}\
+  \},\
+  \{\
+    _id: 2,\
+    name: 'xTablet',\
+    price: 895,\
+    spec: \{ ram: 16, screen: 9.5, cpu: 3.66 \}\
+  \},\
+  \{\
+    _id: 3,\
+    name: 'SmartTablet',\
+    price: 895,\
+    spec: \{ ram: 12, screen: 9.7, cpu: 3.66 \}\
+  \}\
+]\
+\
+// Step 5: Update fields within embedded documents (spec) for documents with price > 700\
+db.products.updateMany(\{\
+    price: \{ $gt: 700\}\
+\}, \{\
+    $set: \{\
+        "spec.ram": 32,\
+        "spec.screen": 9.8,\
+        "spec.cpu": 5.66\
+    \}\
+\})\
+\
+// Output:\
+\{\
+  acknowledged: true,\
+  insertedId: null,\
+  matchedCount: 3,\
+  modifiedCount: 3,\
+  upsertedCount: 0\
+\}\
+\
+// Step 6: Update specific array positions (index 0 and 1) for documents with _id 1, 2, and 3\
+db.products.updateMany(\{\
+    _id: \{\
+        $in: [1, 2, 3]\
+    \}\
+\}, \{\
+    $set: \{\
+        "storage.0": 16,\
+        "storage.1": 32\
+    \}\
+\})\
+\
+// Output:\
+\{\
+  acknowledged: true,\
+  insertedId: null,\
+  matchedCount: 3,\
+  modifiedCount: 3,\
+  upsertedCount: 0\
+\}\
+\
+// Step 7: Verify the array updates\
+db.products.find(\
+   \{ _id: \{ $in: [1,2,3]\}\}, \
+   \{ name: 1, storage: 1\}\
+)\
+\
+// Output:\
+[\
+  \{ _id: 1, name: 'xPhone', storage: [ 16, 32, 256 ] \},\
+  \{ _id: 2, name: 'xTablet', storage: [ 16, 32, 512 ] \},\
+  \{ _id: 3, name: 'SmartTablet', storage: [ 16, 32, 128 ] \}\
+]\
+\
+\
+\
+\
+db.products.insertMany([\
+    \{ "_id" : 1, "name" : "xPhone", "price" : 799, "releaseDate": ISODate("2011-05-14"), "spec" : \{ "ram" : 4, "screen" : 6.5, "cpu" : 2.66 \},"color":["white","black"],"storage":[64,128,256]\},\
+    \{ "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate": ISODate("2011-09-01") , "spec" : \{ "ram" : 16, "screen" : 9.5, "cpu" : 3.66 \},"color":["white","black","purple"],"storage":[128,256,512]\},\
+    \{ "_id" : 3, "name" : "SmartTablet", "price" : 899, "releaseDate": ISODate("2015-01-14"), "spec" : \{ "ram" : 12, "screen" : 9.7, "cpu" : 3.66 \},"color":["blue"],"storage":[16,64,128]\},\
+    \{ "_id" : 4, "name" : "SmartPad", "price" : 699, "releaseDate": ISODate("2020-05-14"),"spec" : \{ "ram" : 8, "screen" : 9.7, "cpu" : 1.66 \},"color":["white","orange","gold","gray"],"storage":[128,256,1024]\},\
+    \{ "_id" : 5, "name" : "SmartPhone", "price" : 599,"releaseDate": ISODate("2022-09-14"), "spec" : \{ "ram" : 4, "screen" : 5.7, "cpu" : 1.66 \},"color":["white","orange","gold","gray"],"storage":[128,256]\}\
+])\
+\
+// Output:\
+\{\
+  "acknowledged": true,\
+  "insertedIds": \{ "0": 1, "1": 2, "2": 3, "3": 4, "4": 5 \}\
+\}\
+\
+\
+\
+db.products.updateMany(\
+    \{ price: 899 \}, \
+    \{ $set: \{ price: 895 \}\}\
+)\
+\
+// Output:\
+\{\
+  "acknowledged": true,\
+  "insertedId": null,\
+  "matchedCount": 2,\
+  "modifiedCount": 2,\
+  "upsertedCount": 0\
+\}\
+\
+\
+\
+\
+db.products.find(\
+    \{ price: 895 \}, \
+    \{ name: 1, price: 1 \}\
+)\
+\
+// Output:\
+[\
+  \{ "_id": 2, "name": "xTablet", "price": 895 \},\
+  \{ "_id": 3, "name": "SmartTablet", "price": 895 \}\
+]\
+\
+\
+\
+\
+db.products.find(\
+    \{ price: \{ $gt: 700 \} \}, \
+    \{ name: 1, price: 1, spec: 1 \}\
+)\
+\
+// Output:\
+[\
+  \{\
+    "_id": 1,\
+    "name": "xPhone",\
+    "price": 799,\
+    "spec": \{ "ram": 4, "screen": 6.5, "cpu": 2.66 \}\
+  \},\
+  \{\
+    "_id": 2,\
+    "name": "xTablet",\
+    "price": 895,\
+    "spec": \{ "ram": 16, "screen": 9.5, "cpu": 3.66 \}\
+  \},\
+  \{\
+    "_id": 3,\
+    "name": "SmartTablet",\
+    "price": 895,\
+    "spec": \{ "ram": 12, "screen": 9.7, "cpu": 3.66 \}\
+  \}\
+]\
+\
+\
+\
+\
+db.products.updateMany(\
+    \{ price: \{ $gt: 700 \} \}, \
+    \{\
+        $set: \{\
+            "spec.ram": 32,\
+            "spec.screen": 9.8,\
+            "spec.cpu": 5.66\
+        \}\
+    \}\
+)\
+\
+// Output:\
+\{\
+  "acknowledged": true,\
+  "insertedId": null,\
+  "matchedCount": 3,\
+  "modifiedCount": 3,\
+  "upsertedCount": 0\
+\}\
+\
+\
+\
+db.products.updateMany(\
+    \{ _id: \{ $in: [1, 2, 3] \} \}, \
+    \{\
+        $set: \{\
+            "storage.0": 16,\
+            "storage.1": 32\
+        \}\
+    \}\
+)\
+\
+// Output:\
+\{\
+  "acknowledged": true,\
+  "insertedId": null,\
+  "matchedCount": 3,\
+  "modifiedCount": 3,\
+  "upsertedCount": 0\
+\}\
+\
+\
+\
+\
+db.products.find(\
+   \{ _id: \{ $in: [1, 2, 3] \} \}, \
+   \{ name: 1, storage: 1 \}\
+)\
+\
+// Output:\
+[\
+  \{ "_id": 1, "name": "xPhone", "storage": [ 16, 32, 256 ] \},\
+  \{ "_id": 2, "name": "xTablet", "storage": [ 16, 32, 512 ] \},\
+  \{ "_id": 3, "name": "SmartTablet", "storage": [ 16, 32, 128 ] \}\
+]}
