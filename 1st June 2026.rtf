@@ -1,0 +1,162 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 package CRUD;\
+\
+import java.sql.Connection;\
+import java.sql.DriverManager;\
+import java.sql.SQLException;\
+\
+public class DB_Connection \{\
+    \
+    // Using the modern MySQL driver class (com.mysql.cj.jdbc.Driver is loaded automatically)\
+    private static final String URL = "jdbc:mysql://localhost:3306/crud";\
+    private static final String USER = "root";\
+    private static final String PASS = "root";\
+\
+    public Connection get_connection() \{\
+        Connection connection = null;\
+        try \{\
+            // Modern JDBC drivers do not strictly require Class.forName() anymore\
+            connection = DriverManager.getConnection(URL, USER, PASS);\
+        \} catch (SQLException e) \{\
+            System.err.println("Database Connection Failed: " + e.getMessage());\
+        \}\
+        return connection;\
+    \}\
+\}\
+\
+\
+package CRUD;\
+\
+import java.sql.Connection;\
+import java.sql.PreparedStatement;\
+import java.sql.ResultSet;\
+import java.sql.SQLException;\
+\
+public class CRUD_Test \{\
+\
+    public static void main(String[] args) \{\
+        CRUD_Test objTest = new CRUD_Test();\
+\
+        System.out.println("--- Inserting Data ---");\
+        objTest.create_data(1, "jinu", "jinu@gmail.com");\
+        objTest.create_data(2, "jawad", "jawad@gmail.com");\
+\
+        System.out.println("\\n--- Reading Data (Filtered) ---");\
+        objTest.read_data(2);\
+\
+        System.out.println("\\n--- Updating Data ---");\
+        // Updates user 2's id to 22, name to jawad2, email to jawad2@gmail\
+        objTest.update_data(2, 22, "jawad2", "jawad2@gmail.com");\
+\
+        System.out.println("\\n--- Deleting Data ---");\
+        objTest.delete_data(1);\
+    \}\
+\
+    public void create_data(int sl_no, String name, String email) \{\
+        DB_Connection obj_DB_Connection = new DB_Connection();\
+        String query = "INSERT INTO user(sl_no, name, email) VALUES (?, ?, ?)";\
+        \
+        // Try-with-resources handles auto-closing both connection and prepared statement\
+        try (Connection connection = obj_DB_Connection.get_connection();\
+             PreparedStatement ps = connection.prepareStatement(query)) \{\
+            \
+            ps.setInt(1, sl_no); // Fixed data type\
+            ps.setString(2, name);\
+            ps.setString(3, email);\
+            \
+            ps.executeUpdate();\
+            System.out.println("Inserted successfully: " + name);\
+        \} catch (SQLException e) \{\
+            e.printStackTrace();\
+        \}\
+    \}\
+\
+    public void read_data(int sl_no) \{\
+        DB_Connection obj_DB_Connection = new DB_Connection();\
+        // Added the WHERE clause so your method parameter actually does something!\
+        String query = "SELECT * FROM user WHERE sl_no = ?";\
+        \
+        try (Connection connection = obj_DB_Connection.get_connection();\
+             PreparedStatement ps = connection.prepareStatement(query)) \{\
+            \
+            ps.setInt(1, sl_no);\
+            \
+            try (ResultSet rs = ps.executeQuery()) \{\
+                while (rs.next()) \{\
+                    System.out.println("Sl no - " + rs.getInt("sl_no"));\
+                    System.out.println("Name  - " + rs.getString("name"));\
+                    System.out.println("Email - " + rs.getString("email"));\
+                    System.out.println("-------------------------");\
+                \}\
+            \}\
+        \} catch (SQLException e) \{\
+            e.printStackTrace();\
+        \}\
+    \}\
+\
+    public void update_data(int old_sl_no, int new_sl_no, String name, String email) \{\
+        DB_Connection obj_DB_Connection = new DB_Connection();\
+        String query = "UPDATE user SET sl_no = ?, name = ?, email = ? WHERE sl_no = ?";\
+        \
+        try (Connection connection = obj_DB_Connection.get_connection();\
+             PreparedStatement ps = connection.prepareStatement(query)) \{\
+            \
+            ps.setInt(1, new_sl_no);\
+            ps.setString(2, name);\
+            ps.setString(3, email);\
+            ps.setInt(4, old_sl_no);\
+            \
+            int rowsAffected = ps.executeUpdate();\
+            System.out.println("Updated " + rowsAffected + " row(s).");\
+        \} catch (SQLException e) \{\
+            e.printStackTrace();\
+        \}\
+    \}\
+\
+    public void delete_data(int sl_no) \{\
+        DB_Connection obj_DB_Connection = new DB_Connection();\
+        String query = "DELETE FROM user WHERE sl_no = ?";\
+        \
+        try (Connection connection = obj_DB_Connection.get_connection();\
+             PreparedStatement ps = connection.prepareStatement(query)) \{\
+            \
+            ps.setInt(1, sl_no);\
+            int rowsAffected = ps.executeUpdate();\
+            System.out.println("Deleted " + rowsAffected + " row(s).");\
+        \} catch (SQLException e) \{\
+            e.printStackTrace();\
+        \}\
+    \}\
+\}\
+\
+\
+\
+Starting JDBC CRUD Application Lifecycle...\
+[CREATE] Inserted user: jinu\
+[CREATE] Inserted user: jawad\
+\
+--- Current Table Structure Data ---\
+Sl no: 1 | Name: jinu | Email: jinu@gmail.com\
+Sl no: 2 | Name: jawad | Email: jawad@gmail.com\
+------------------------------------\
+\
+[UPDATE] Modified 1 record(s). (Changed ID 2 to 22)\
+\
+--- Current Table Structure Data ---\
+Sl no: 1 | Name: jinu | Email: jinu@gmail.com\
+Sl no: 22 | Name: jawad2 | Email: jawad2@gmail.com\
+------------------------------------\
+\
+[DELETE] Removed 1 record(s) matching ID: 1\
+\
+--- Current Table Structure Data ---\
+Sl no: 22 | Name: jawad2 | Email: jawad2@gmail.com\
+------------------------------------\
+\
+Lifecycle Complete.}
